@@ -30,7 +30,7 @@ df = pd.DataFrame(data, columns=headers)
 def update_df():
     # Reload the data from the Gsheet
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
+    credentials = ServiceAccountCredentials.from_json_keyfile_name('/json/gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
     gc = gspread.authorize(credentials)
     wks = gc.open("Sanity Check - EMEA").sheet1  # get the Gsheet
     data = wks.get_all_values()
