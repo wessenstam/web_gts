@@ -1,0 +1,132 @@
+<html>
+    <head>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <title>{{ title }}</title>
+    </head>
+    <body><center>
+    <h2>Lookup your data</h2>
+    <form class="form-horizontal" action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.email.label }}<br>
+            {{ form.email(size=32) }}
+        </p>
+        <p>{{ form.submit(class="btn btn-primary") }}</p>
+    </form>
+
+    {% if error %}
+    <H4>Email address {{ error.email }} has not been found in the database. Please try again</H4>
+        {{ error.message }}
+
+    {% else %}
+
+        {% if user.attendee_name %}
+        <P>Please find hereby your information for you variables that are needed for the various labs that you are running.</P>
+            <table class="table-bordered table-striped table-sm table">
+                <tr>
+                    <th >Title</th>
+                    <th >Value</th>
+                </tr>
+                <tr>
+                    <td>Attendee Name</td>
+                    <td>{{ user.attendee_name }}</td>
+                </tr>
+                <tr>
+                    <td >Attendee ID</td>
+                    <td >{{ user.attendee_id }}</td>
+                </tr>
+                <tr>
+                    <td>Cluster Name</td>
+                    <td>{{ user.cluster_name }}</td>
+                </tr>
+                <tr>
+                    <td >Priam Element VIP</td>
+                    <td >{{ user.pe_vip }}</td>
+                </tr>
+                <tr>
+                    <td>Prism Central VIP</td>
+                    <td>{{ user.pc_vip }}</td>
+                </tr>
+                <tr>
+                    <td >User Network Name</td>
+                    <td >{{ user.user_nw }}</td>
+                </tr>
+                <tr>
+                    <td>VLAN ID User Network</td>
+                    <td>{{ user.vlan_id }}</td>
+                </tr>
+                <tr>
+                    <td >Gateway IP User Network</td>
+                    <td >{{ user.gw_ip }}</td>
+                </tr>
+                <tr>
+                    <td>User Network Address/Prefix</td>
+                    <td>{{ user.user_nw_sub }}</td>
+                </tr>
+                <tr>
+                    <td >Domain Name Server</td>
+                    <td >{{ user.dns }}</td>
+                </tr>
+                <tr>
+                    <td>DHCP Start</td>
+                    <td>{{ user.dhcp_strt }}</td>
+                </tr>
+                <tr>
+                    <td >DHCP End</td>
+                    <td >{{ user.dhcp_end }}</td>
+                </tr>
+                <tr>
+                    <td>Frame/Beeam Lab/VPN User Name</td>
+                    <td>{{ user.vpn_user }}</td>
+                </tr>
+                <tr>
+                    <td>&nbsp</td>
+                    <td>&nbsp</td>
+                </tr>
+                <tr>
+                    <td colspan="2" bgcolor="red"><center><B>Shared Network for Simplifying DB Availability Lab</B></center></td>
+                </tr>
+                <tr>
+                    <th >Title</th>
+                    <th >Value</th>
+                </tr>
+                <tr>
+                    <td >User Network Name</td>
+                    <td >{{ user.user_nw_era }}</td>
+                </tr>
+                <tr>
+                    <td>VLAN ID User Network</td>
+                    <td>{{ user.vlan_id_era }}</td>
+                </tr>
+                <tr>
+                    <td >Gateway IP User Network</td>
+                    <td >{{ user.gw_ip_era }}</td>
+                </tr>
+                <tr>
+                    <td>User Network Address/Prefix</td>
+                    <td>{{ user.user_nw_sub_era }}</td>
+                </tr>
+                <tr>
+                    <td >Domain Name Server</td>
+                    <td >{{ user.dns_era }}</td>
+                </tr>
+                <tr>
+                    <td>DHCP Start</td>
+                    <td>{{ user.dhcp_strt_era }}</td>
+                </tr>
+                <tr>
+                    <td >DHCP End</td>
+                    <td >{{ user.dhcp_end_era }}</td>
+                </tr>
+            </table>
+        {% else %}
+         <P>Please use this form to search for your information
+         </P>
+
+        {% endif %}
+
+    {% endif %}
+    </center>
+    </body>
+</html>
