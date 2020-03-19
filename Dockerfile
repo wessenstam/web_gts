@@ -17,10 +17,10 @@ RUN apk add --no-cache python3 python3-dev libstdc++ g++ git && \
     mkdir /json && \
     chmod 777 /json
 
+WORKDIR /github/web_gts
+
 VOLUME /json
 
+EXPOSE 5000
 
-
-
-
-CMD ["python", "/github/web_ts2020/app.py"]
+CMD ["bash", "start.sh"]
