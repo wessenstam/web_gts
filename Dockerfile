@@ -11,16 +11,18 @@ RUN apk add --no-cache python3 python3-dev libstdc++ g++ git && \
     pip3 install --upgrade oauth2client && \
     pip3 install numpy && \
     pip3 install pandas && \
-    pip3 install --no-cache openssl && \
     pip3 install flask && \
+    pip3 install flask-wtf && \
 # Create the /json location where we put a volume so we can grab the credentials outside the container
     mkdir /json && \
     chmod 777 /json
 
-WORKDIR /github/web_gts
+WORKDIR /
+
+ADD start.sh .
 
 VOLUME /json
 
 EXPOSE 5000
 
-CMD ["bash", "start.sh"]
+CMD ["sh", "start.sh"]
