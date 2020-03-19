@@ -89,4 +89,4 @@ if __name__ == "main":
     df=load_gsheet_data()
 
     # start the app
-    app.run(debug=True)
+    app.run(debug=False,host= '0.0.0.0'))
