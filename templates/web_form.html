@@ -9,8 +9,7 @@
     <form class="form-horizontal" action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
-            {{ form.email.label }}<br>
-            {{ form.email(size=32) }}
+            {{ form.email.label }} {{ form.email(size=32,value="") }}
         </p>
         <p>{{ form.submit(class="btn btn-primary") }}</p>
     </form>

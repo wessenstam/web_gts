@@ -75,10 +75,9 @@ def show_form_data():
                              'dhcp_strt_era': era_info[0]['DHCP Start'],
                              'dhcp_end_era': era_info[0]['DHCP End']
                              }
+                form.email.data=""
             except IndexError:
-                error = {'message' : 'Unknown email address',
-                       'email' : form.email.data
-                       }
+                error = {'message' : 'Unknown email address', 'email' : form.email.data }
 
 
     # Send the output to the webbrowser

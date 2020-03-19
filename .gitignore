@@ -40,11 +40,9 @@
 ehthumbs.db
 Thumbs.db
 
-# _build Directories #
+# PyhtonCache Directories #
 ######################
-_build
-_builds
-BuildDocs
+*pychache*/*
 
 # Sensitive info #
 ##################
