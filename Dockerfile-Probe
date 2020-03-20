@@ -1,0 +1,20 @@
+FROM alpine
+
+MAINTAINER Willem Essenstam <wessenstam.at@gmail.com>
+
+# Get the to be needed stuff in
+RUN apk add --no-cache python3 git && \
+    ln -s /usr/include/locale.h /usr/include/xlocale.h  && \
+# Install the python dependencies
+    pip3 install --upgrade pip
+
+
+# open the SSH so we can login using password
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+RUN passwd root -d 'nutanix/4u'
+
+VOLUME /json
+
+EXPOSE 5000
+
+CMD ["sh", "probe.sh"]

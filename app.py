@@ -1,3 +1,12 @@
+# Python Flask server for attendee look up
+# Willem Essenstam - Nutanix - 19 March 2020
+# ToDo: Create a more dynamic way of getting the json file
+#       - Enumerate a dir, if then not, ask via a webpage.
+# ToDo: Create a way to use probes (small countainer systems) that will sned data into csv and a DF so we can pull detailed info
+# ToDo: Use MathLib to show the trend/progress
+# ToDo: Which parameters do we want to see/have
+
+
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
@@ -17,7 +26,7 @@ class LoginForm(FlaskForm):
 
 # Grabbing the initial data from gsheet
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-credentials = ServiceAccountCredentials.from_json_keyfile_name('/json/gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
+credentials = ServiceAccountCredentials.from_json_keyfile_name('gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
 gc = gspread.authorize(credentials)
 wks = gc.open("Sanity Check - EMEA").sheet1  # get the Gsheet
 data = wks.get_all_values()
@@ -25,12 +34,31 @@ headers = data.pop(0)
 # Drop all data in a dataframe
 df = pd.DataFrame(data, columns=headers)
 
+# Get the json data from the probes.
+@app.route("/input", methods=['POST'])
+def input_json():
+    json_data=request.get_json()
+    cluster_name=json_data['cluster_name']
+    nr_vms=json_data['vms']
+    cpu=json_data['cpu']
+    ram=json_data['ram']
+    iops=json_data['iops']
+    ip=json_data['ip']
+    audits_nr=json_data['audits_nr']
+    netw_nr=json_data['netw']
+    ip=json_data['ip']
+    return "Received the following data:\n\n" \
+            +str()+" for the IOPS\n" \
+            +str(nr_vms)+" for the amount of VMs\n" \
+            +str(cpu)+" for the COU load\n" \
+            +str(ram)+" for the amount of used RAM\n" \
+            "From PC with IP address: "+str(ip)
 
 @app.route("/update")
 def update_df():
     # Reload the data from the Gsheet
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('/json/gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
+    credentials = ServiceAccountCredentials.from_json_keyfile_name('gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
     gc = gspread.authorize(credentials)
     wks = gc.open("Sanity Check - EMEA").sheet1  # get the Gsheet
     data = wks.get_all_values()
@@ -85,8 +113,5 @@ def show_form_data():
 
 
 if __name__ == "main":
-    # Initial load of the Gsheet data
-    df=load_gsheet_data()
-
     # start the app
     app.run()
