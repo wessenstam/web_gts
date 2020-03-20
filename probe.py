@@ -1,24 +1,5 @@
-# This script is to check the deployed clusters for the Tech Summits to see if everything has been deployed as it should be.
-# 16-02-2020: Willem Essenstam - Initial version 0.1
-# Order:
-# 1. Check the PE deployment:   a) Eula
-#                                b) Pulse
-#                                c) Network
-#                                d) is AD configured
-#                                e) DNS servers
-#                                f) NTP servers
-# 2. Check PC deployment:       a) DNS servers
-#                                b) is AD integrated
-#                                c) is Calm enabled
-#                                d) is Karbon enabled
-#                                e) is Objects enabled
-#                                f) has LCM run
-#                                g) has flow been enabled
-#                                h) do we have the blueprints?
-#                                    1. CICD
-#                                    2. Citrix
-#                                    3. Era deployment
-#                                i) Do we have the images uploaded?
+# This script is to probed the to be checked cluster
+# 19-03-2020: Willem Essenstam - Initial version 0.1
 
 import requests
 import json
@@ -166,16 +147,16 @@ urllib3.disable_warnings()
 
 # Grab the environmental data we have received when we started the container
 server_ip=os.environ['server_ip']
+server_prt=os.environ['server_prt']
 check_ip=os.environ['check_ip']
 user_name=os.environ['user_name']
 passwd=os.environ['passwd']
 value=''
 method='POST'
-url="http://"+str(server_ip)+"/input"
+url="http://"+str(server_ip)+":"+str(server_prt)+"/input"
 
 while True:
     json_return=grab_data(check_ip,user_name,passwd)
-    print(json_return)
-    #get_json_data(server_ip, url, json_return, method, user_name, passwd, value)
+    print(get_json_data(server_ip, url, json_return, method, user_name, passwd, value))
     # Sleep 5 minutes before grabbing the next data link
     time.sleep(300)

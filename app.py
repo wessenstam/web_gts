@@ -5,24 +5,30 @@
 # ToDo: Create a way to use probes (small countainer systems) that will sned data into csv and a DF so we can pull detailed info
 # ToDo: Use MathLib to show the trend/progress
 # ToDo: Which parameters do we want to see/have
-
+#
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
+import numpy as np
+import json
+import plotly
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 from flask import *
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
+from csv import writer
+import os.path
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
 
-
+# Geting the Forms ready to be used
 class LoginForm(FlaskForm):
     email = StringField('Email Address', validators=[DataRequired()])
     submit = SubmitField('Find me...')
-
 
 # Grabbing the initial data from gsheet
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -34,25 +40,63 @@ headers = data.pop(0)
 # Drop all data in a dataframe
 df = pd.DataFrame(data, columns=headers)
 
-# Get the json data from the probes.
+# Check to see if we have a csv already. If so delete it.. and clean it with headers.
+if os.path.exists("usage.csv"):
+    os.remove("usage.csv")
+
+with open('usage.csv', 'a+', newline='') as file:
+    writer(file).writerow(['Time','Cluster Name','IP','VMs','CPU','RAM','IOPS','Audits','Networks'])
+
+def create_plot():
+    df = pd.read_csv("usage.csv")
+    fig=make_subplots(rows=1, cols=2)
+    data=[
+        go.Bar(x=df['Time'],
+            y=df['IOPS']
+        )
+    ]
+
+    graphJSON=json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+    return graphJSON
+
+# Load the routes we need for the Flask webpage.
+@app.route("/usage")
+def output_df_usage_data():
+    bar = create_plot()
+    return render_template('web_graph.html', plot=bar)
+
+
+# Get the json data from the probes into a dataframe.
 @app.route("/input", methods=['POST'])
 def input_json():
     json_data=request.get_json()
     cluster_name=json_data['cluster_name']
-    nr_vms=json_data['vms']
+    vm_nr=json_data['vms']
     cpu=json_data['cpu']
     ram=json_data['ram']
     iops=json_data['iops']
     ip=json_data['ip']
     audits_nr=json_data['audits_nr']
     netw_nr=json_data['netw']
-    ip=json_data['ip']
-    return "Received the following data:\n\n" \
-            +str()+" for the IOPS\n" \
-            +str(nr_vms)+" for the amount of VMs\n" \
-            +str(cpu)+" for the COU load\n" \
-            +str(ram)+" for the amount of used RAM\n" \
-            "From PC with IP address: "+str(ip)
+    time=json_data['time']
+
+    # Define the payload, based on the received data.
+    return_payload = {'Cluster Name': cluster_name ,
+                      'VMs': vm_nr,
+                      'CPU': cpu,
+                      'RAM': ram,
+                      'IOPS': iops,
+                      'IP': ip,
+                      'Audits': audits_nr,
+                      'Networks': netw_nr,
+                      'Time': time
+                      }
+    #write dat in a csv for later analyses..
+    with open('usage.csv', 'a+', newline='') as file:
+        writer(file).writerow([time,cluster_name,ip,vm_nr,cpu,ram,iops,audits_nr,netw_nr])
+
+    # get the data into a new df and append afterwards to a csv file
+    return json.dumps(return_payload)
 
 @app.route("/update")
 def update_df():
