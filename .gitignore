@@ -47,3 +47,5 @@ Thumbs.db
 # Sensitive info #
 ##################
 gts-gsheet-pandas-flask.json
+*.csv
+*.pyc
