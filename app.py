@@ -39,7 +39,7 @@ headers = data.pop(0)
 df = pd.DataFrame(data, columns=headers)
 
 # Check to see if we have a csv already. If so delete it.. and clean it with headers.
-if os.path.exists("//json/usage.csv"):
+if os.path.exists("/json/usage.csv"):
     os.remove("/json/usage.csv")
 
 with open('/json/usage.csv', 'a+', newline='') as file:
