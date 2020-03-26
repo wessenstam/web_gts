@@ -74,7 +74,7 @@ def grab_data(server_ip,user,passwd):
     json_search = get_json_data(server_ip_pc, url, payload, method, user, passwd, value)
     #print(json_search)
     cluster_name = json_search['entities'][0]['status']['name']
-    bp_uuid=json_search['entities'][0]['metadata']['uuid']
+    bp_uuid=json_search['entities'][1]['metadata']['uuid']
 
     # How many VMs did we have on the PC?
     url = "api/nutanix/v3/vms/list"
@@ -154,8 +154,6 @@ passwd=os.environ['passwd']
 value=''
 method='POST'
 url="http://"+str(server_ip)+":"+str(server_prt)+"/input"
-
-print(server_ip, server_prt, check_ip, user_name,passwd)
 
 while True:
     json_return=grab_data(check_ip,user_name,passwd)
