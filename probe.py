@@ -155,6 +155,8 @@ value=''
 method='POST'
 url="http://"+str(server_ip)+":"+str(server_prt)+"/input"
 
+print(server_ip, server_prt, check_ip, user_name,passwd)
+
 while True:
     json_return=grab_data(check_ip,user_name,passwd)
     print(get_json_data(server_ip, url, json_return, method, user_name, passwd, value))
