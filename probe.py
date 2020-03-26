@@ -312,5 +312,5 @@ url="http://"+str(server_ip)+":"+str(server_prt)+"/input"
 while True:
     json_return=grab_data(check_ip,user_name,passwd)
     print(get_json_data(server_ip, url, json_return, method, user_name, passwd, value))
-    # Sleep 5 minutes before grabbing the next data link
-    time.sleep(300)
+    # Sleep 15 minutes before grabbing the next data link
+    time.sleep(900)
