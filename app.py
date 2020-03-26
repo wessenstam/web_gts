@@ -45,7 +45,7 @@ if os.path.exists("usage.csv"):
     os.remove("usage.csv")
 
 with open('usage.csv', 'a+', newline='') as file:
-    writer(file).writerow(['Time','Cluster Name','IP','VMs','CPU','RAM','IOPS','Audits','Networks'])
+    writer(file).writerow(['Time','Cluster Name','IP','VMs','VM names','CPU','RAM','IOPS','Audits','Networks','Network Names','Applications','Blueprints','Shares','Flow','Categories'])
 
 def create_plot():
     df = pd.read_csv("usage.csv")
@@ -70,6 +70,7 @@ def output_df_usage_data():
 @app.route("/input", methods=['POST'])
 def input_json():
     json_data=request.get_json()
+    print(json_data)
     cluster_name=json_data['cluster_name']
     vm_nr=json_data['vms']
     cpu=json_data['cpu']
@@ -79,6 +80,13 @@ def input_json():
     audits_nr=json_data['audits_nr']
     netw_nr=json_data['netw']
     time=json_data['time']
+    vm_names=json_data['vmnames']
+    netw_name=json_data['netnames']
+    apps=json_data['apps']
+    bps=json_data['bpnames']
+    share=json_data['share']
+    flow=json_data['flow']
+    cats=json_data['cat']
 
     # Define the payload, based on the received data.
     return_payload = {'Cluster Name': cluster_name ,
@@ -89,11 +97,18 @@ def input_json():
                       'IP': ip,
                       'Audits': audits_nr,
                       'Networks': netw_nr,
-                      'Time': time
+                      'Time': time,
+                      'VM Names': vm_names,
+                      'Network Names': netw_name,
+                      'Applications': apps,
+                      'Blueprints': bps,
+                      'Shares': share,
+                      'Flow': flow,
+                      'Categories': cats
                       }
     #write dat in a csv for later analyses..
     with open('usage.csv', 'a+', newline='') as file:
-        writer(file).writerow([time,cluster_name,ip,vm_nr,cpu,ram,iops,audits_nr,netw_nr])
+        writer(file).writerow([time,cluster_name,ip,vm_nr,vm_names,cpu,ram,iops,audits_nr,netw_nr,netw_name,apps,bps,share,flow,cats])
 
     # get the data into a new df and append afterwards to a csv file
     return json.dumps(return_payload)
