@@ -21,7 +21,7 @@ def get_json_data(ip_address,get_url,json_data,method,user,passwd,value):
     header_post = {'Content-type': 'application/json'}
     # if method is not set assume GET
     if method=="":
-        method="get"
+        method="post"
 
     # Set the right requests based on GET or POST
     if method=="get":
