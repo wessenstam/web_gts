@@ -2,9 +2,7 @@
 # Willem Essenstam - Nutanix - 19 March 2020
 # ToDo: Create a more dynamic way of getting the json file
 #       - Enumerate a dir, if then not, ask via a webpage.
-# ToDo: Create a way to use probes (small countainer systems) that will sned data into csv and a DF so we can pull detailed info
-# ToDo: Use MathLib to show the trend/progress
-# ToDo: Which parameters do we want to see/have
+# ToDo: show the graphs of the clusters
 #
 
 import gspread
@@ -32,7 +30,7 @@ class LoginForm(FlaskForm):
 
 # Grabbing the initial data from gsheet
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-credentials = ServiceAccountCredentials.from_json_keyfile_name('gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
+credentials = ServiceAccountCredentials.from_json_keyfile_name('/json/gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
 gc = gspread.authorize(credentials)
 wks = gc.open("Sanity Check - EMEA").sheet1  # get the Gsheet
 data = wks.get_all_values()
@@ -41,8 +39,8 @@ headers = data.pop(0)
 df = pd.DataFrame(data, columns=headers)
 
 # Check to see if we have a csv already. If so delete it.. and clean it with headers.
-if os.path.exists("usage.csv"):
-    os.remove("usage.csv")
+if os.path.exists("/json/usage.csv"):
+    os.remove("/json/usage.csv")
 
 with open('usage.csv', 'a+', newline='') as file:
     writer(file).writerow(['Time','Cluster Name','IP','VMs','VM names','CPU','RAM','IOPS','Audits','Networks','Network Names','Applications','Blueprints','Shares','Flow','Categories'])
@@ -117,7 +115,7 @@ def input_json():
 def update_df():
     # Reload the data from the Gsheet
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
+    credentials = ServiceAccountCredentials.from_json_keyfile_name('json/gts-gsheet-pandas-flask.json', scope)  # Change location as soon as it comes into prod
     gc = gspread.authorize(credentials)
     wks = gc.open("Sanity Check - EMEA").sheet1  # get the Gsheet
     data = wks.get_all_values()
