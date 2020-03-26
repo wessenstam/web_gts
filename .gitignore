@@ -49,4 +49,4 @@ Thumbs.db
 gts-gsheet-pandas-flask.json
 *.csv
 *.pyc
-!/env.list
+env.list
