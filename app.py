@@ -30,7 +30,7 @@ class LoginForm(FlaskForm):
 
 # Grabbing the initial data from gsheet
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-credentials = ServiceAccountCredentials.from_json_keyfile_name('/json/gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
+credentials = ServiceAccountCredentials.from_json_keyfile_name('json/gts-gsheet-pandas-flask.json',scope)  # Change location as soon as it comes into prod
 gc = gspread.authorize(credentials)
 wks = gc.open("Sanity Check - EMEA").sheet1  # get the Gsheet
 data = wks.get_all_values()
@@ -39,11 +39,11 @@ headers = data.pop(0)
 df = pd.DataFrame(data, columns=headers)
 
 # Check to see if we have a csv already. If so delete it.. and clean it with headers.
-if os.path.exists("/json/usage.csv"):
-    os.remove("/json/usage.csv")
+if os.path.exists("json/usage.csv"):
+    os.remove("json/usage.csv")
 
-with open('/json/usage.csv', 'a+', newline='') as file:
-    writer(file).writerow(['Time','Cluster Name','IP','VMs','VM names','CPU','RAM','IOPS','Audits','Networks','Network Names','Applications','Blueprints','Shares','Flow','Categories'])
+with open('json/usage.csv', 'a+', newline='') as file:
+    writer(file).writerow(['Time','Cluster Name','IP','VMs','VM names','CPU','RAM','IOPS','Audits','Networks','Network Names','Applications','Blueprints','Shares','Flow','Categories','Databases'])
 
 def create_plot():
     df = pd.read_csv("usage.csv")
@@ -85,6 +85,7 @@ def input_json():
     share=json_data['share']
     flow=json_data['flow']
     cats=json_data['cat']
+    dbs=json_data['dbs']
 
     # Define the payload, based on the received data.
     return_payload = {'Cluster Name': cluster_name ,
@@ -102,11 +103,12 @@ def input_json():
                       'Blueprints': bps,
                       'Shares': share,
                       'Flow': flow,
-                      'Categories': cats
+                      'Categories': cats,
+                      'Databases' : dbs
                       }
     #write dat in a csv for later analyses..
-    with open('/json/usage.csv', 'a+', newline='') as file:
-        writer(file).writerow([time,cluster_name,ip,vm_nr,vm_names,cpu,ram,iops,audits_nr,netw_nr,netw_name,apps,bps,share,flow,cats])
+    with open('json/usage.csv', 'a+', newline='') as file:
+        writer(file).writerow([time,cluster_name,ip,vm_nr,vm_names,cpu,ram,iops,audits_nr,netw_nr,netw_name,apps,bps,share,flow,cats,dbs])
 
     # get the data into a new df and append afterwards to a csv file
     return json.dumps(return_payload)
@@ -115,7 +117,7 @@ def input_json():
 def update_df():
     # Reload the data from the Gsheet
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('/json/gts-gsheet-pandas-flask.json', scope)  # Change location as soon as it comes into prod
+    credentials = ServiceAccountCredentials.from_json_keyfile_name('json/gts-gsheet-pandas-flask.json', scope)  # Change location as soon as it comes into prod
     gc = gspread.authorize(credentials)
     wks = gc.open("Sanity Check - EMEA").sheet1  # get the Gsheet
     data = wks.get_all_values()
