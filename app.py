@@ -39,14 +39,14 @@ headers = data.pop(0)
 df = pd.DataFrame(data, columns=headers)
 
 # Check to see if we have a csv already. If so delete it.. and clean it with headers.
-if os.path.exists("json/usage.csv"):
-    os.remove("json/usage.csv")
+if os.path.exists("json/usage_vgts.csv"):
+    os.remove("json/usage_vgts.csv")
 
-with open('json/usage.csv', 'a+', newline='') as file:
+with open('json/usage_vgts.csv', 'a+', newline='') as file:
     writer(file).writerow(['Time','Cluster Name','IP','VMs','VM names','CPU','RAM','IOPS','Audits','Networks','Network Names','Applications','Blueprints','Shares','Flow','Categories','Databases'])
 
 def create_plot():
-    df = pd.read_csv("usage.csv")
+    df = pd.read_csv("usage_vgts.csv")
     fig=make_subplots(rows=1, cols=2)
     data=[
         go.Bar(x=df['Time'],
@@ -107,7 +107,7 @@ def input_json():
                       'Databases' : dbs
                       }
     #write dat in a csv for later analyses..
-    with open('json/usage.csv', 'a+', newline='') as file:
+    with open('json/usage_vgts.csv', 'a+', newline='') as file:
         writer(file).writerow([time,cluster_name,ip,vm_nr,vm_names,cpu,ram,iops,audits_nr,netw_nr,netw_name,apps,bps,share,flow,cats,dbs])
 
     # get the data into a new df and append afterwards to a csv file
@@ -163,10 +163,16 @@ def show_form_data():
                              'dhcp_strt_era': era_info[0]['DHCP Start'],
                              'dhcp_end_era': era_info[0]['DHCP End']
                              }
+                # Write data to a csv.
+                with open('json/user_access.csv', 'a+', newline='') as file:
+                    writer(file).writerow([form.email.data])
+
                 form.email.data=""
             except IndexError:
                 error = {'message' : 'Unknown email address', 'email' : form.email.data }
-
+                # Write data to a csv.
+                with open('json/user_error.csv', 'a+', newline='') as file:
+                    writer(file).writerow([form.email.data])
 
     # Send the output to the webbrowser
     return render_template('web_form.html', title='GTS 2020 - EMEA Cluster lookup', user=user_data, form=form, error=error)
