@@ -5,7 +5,7 @@
 # ToDo: show the graphs of the clusters
 #
 
-import gspread
+
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 import numpy as np
@@ -19,6 +19,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 from csv import writer
 import os.path
+import gspread
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
@@ -132,9 +133,9 @@ def show_form_data():
     error=''
     form = LoginForm()
     user_data=''
-    # If data from the form is valid, we try to get the data..
+    #
     if form.validate_on_submit():
-        df_user_info = df[df['Email'].str.match(form.email.data)]
+        df_user_info = df[df['Email'].str.match(form.email.data.lower())]
         # Change the df into a dict so we can grab the data
         if str(df_user_info):
             user_info = df_user_info.to_dict('records')
