@@ -11,8 +11,8 @@ import json
 import urllib3
 import time
 import os
+import math
 import datetime
-from extract_values import extract_values
 
 #####################################################################################################################################################################
 # This function is to get the to see if the initialisation of the cluster has been run (EULA, PULSE, Network)
@@ -34,10 +34,7 @@ def get_json_data(ip_address,get_url,json_data,method,user,passwd,value):
         try:
             page=requests.get(url,verify=False,auth=(user,passwd),timeout=15)
             page.raise_for_status()
-            if value != "":
-                json_data = extract_values(json.loads(page.text), value)
-            else:
-                json_data = json.loads(page.text)
+            json_data = json.loads(page.text)
             return json_data
         except requests.exceptions.RequestException as err:
             print("OopsError: Something Else", err)
@@ -59,7 +56,7 @@ def get_json_data(ip_address,get_url,json_data,method,user,passwd,value):
             print("OOps: Something Else", err)
         except requests.exceptions.HTTPError as errh:
             print("Http Error:", errh)
-        except requests.exceptions.ConnectionError as errc:
+        except reqcheck_ipuests.exceptions.ConnectionError as errc:
             print("Error Connecting:", errc)
         except requests.exceptions.Timeout as errt:
             print("Timeout Error:", errt)
@@ -70,44 +67,57 @@ def get_json_data(ip_address,get_url,json_data,method,user,passwd,value):
 
 def grab_data(server_ip,user,passwd):
     # Set some variables
-    pe_ip = server_ip[:len(server_ip) - 2] + "37"
-    method=""
+    pe_ip = server_ip
+    method="get"
+    payload=""
 
     # What is the name of cluster so we can search in the data we send?
-    # Use the cluster on the Prism Central for ease of use ;0>
-    url = "api/nutanix/v3/clusters/list"
-    payload = '{"kind":"cluster","length":500,"offset":0}'
+    url = "PrismGateway/services/rest/v1/clusters/"
     json_search = get_json_data(pe_ip, url, payload, method, user, passwd, value)
-    cluster_name = json_search['entities'][0]['status']['name']
-    clus_uuid=json_search['entities'][0]['metadata']['uuid']
+    cluster_name = json_search['entities'][0]['name']
 
     # *********************************** Overall performance numbers **************************************
-    # What is the current CPU load on the PC?
-    url = "api/nutanix/v3/groups"
-    payload = '{"entity_type":"cluster","entity_ids":["'+str(clus_uuid)+ \
-              '"],"grouping_attribute":"cluster","group_member_attributes":' \
-              '[{"attribute":"hypervisor_cpu_usage_ppm"}]}'
+    # What is the current CPU load on the Custer?
+    url = "PrismGateway/services/rest/v1/cluster/stats?metrics=hypervisor_cpu_usage_ppm"
     json_search = get_json_data(server_ip, url, payload, method, user, passwd, value)
-    cpu = json_search['group_results'][0]['entity_results'][0]['data'][0]['values'][0]['values'][0]
+    cpu = str(round(json_search['statsSpecificResponses'][0]['values'][0]/10000,2))
 
     # *********************************************************************************************************
-    # What is the current RAM load on the PC?
-    url = "api/nutanix/v3/groups"
-    payload = '{"entity_type":"cluster","entity_ids":["' + str(clus_uuid) + \
-              '"],"grouping_attribute":"cluster","group_member_attributes":' \
-              '[{"attribute":"hypervisor_memory_usage_ppm"}]}'
+    # What is the current RAM load on the Custer?
+    url = "PrismGateway/services/rest/v1/cluster/stats?metrics=hypervisor_memory_usage_ppm"
     json_search = get_json_data(server_ip, url, payload, method, user, passwd, value)
-    ram = json_search['group_results'][0]['entity_results'][0]['data'][0]['values'][0]['values'][0]
+    ram = str(round(json_search['statsSpecificResponses'][0]['values'][0]/10000,2))
 
     # ********************************************************************************************************
 
-    # How many VMs did we have on the PC and what are their names?
-    url = "api/nutanix/v3/vms/list"
-    payload = '{}'
+    # How high is the latency on IO?
+    url = "PrismGateway/services/rest/v1/cluster/stats?metrics=controller_avg_io_latency_usecs"
     json_search = get_json_data(server_ip, url, payload, method, user, passwd, value)
-    vm_nr = json_search['metadata']['total_matches']
-    vm_name_json = json.dumps(vm_nr)
+    io_lat = str(round(json_search['statsSpecificResponses'][0]['values'][0]/1000,2))
 
+    # ********************************************************************************************************
+
+    # How many VMs did we have on the server?
+    url = "PrismGateway/services/rest/v1/vms"
+    json_search = get_json_data(server_ip, url, payload, method, user, passwd, value)
+    vm_nr = json_search['metadata']['totalEntities']
+
+    # ********************************************************************************************************
+
+    # Combine all variables in a JSON file so we can send it to the server
+    json_payload='{"cluster_name":"'+str(cluster_name)+ \
+                 '","cpu":"'+str(cpu)+ \
+                 '","ram":"'+str(ram)+ \
+                 '","io_lat":"'+str(io_lat)+ \
+                 '","vms":"' + str(vm_nr) + \
+                 '","cl_ip":"'+str(server_ip) +\
+                 '"}'
+
+    # ********************************************************************************************************
+
+    # Return the combined JSON so it can be send
+    #print(json_payload)
+    return json_payload
 """ # ********************************************************************************************************
     # NOT NEEDED FOR GTS 2021
     # ********************************************************************************************************
@@ -323,8 +333,8 @@ def grab_data(server_ip,user,passwd):
                  ',"dbs":' + str(db_json) + \
                  '}'
 """
-    #print(json_payload)
-    return json_payload
+
+
 
 #####################################################################################################################################################################
 # __main__
@@ -333,18 +343,19 @@ def grab_data(server_ip,user,passwd):
 urllib3.disable_warnings()
 
 # Grab the environmental data we have received when we started the container
-server_ip=os.environ['server_ip']
-server_prt=os.environ['server_prt']
-check_ip=os.environ['check_ip']
-user_name=os.environ['user_name']
-passwd=os.environ['passwd']
+server_ip="127.0.0.1"#os.environ['server_ip']
+server_prt=5000#os.environ['server_prt']
+check_ip="192.168.1.51"#os.environ['check_ip']
+user_name="admin"#os.environ['user_name']
+passwd="CE@Nutanix12"#os.environ['passwd']
 value=''
 method='POST'
-url="http://"+str(server_ip)+":"+str(server_prt)+"/input"
+url="http://"+str(server_ip)+":"+str(server_prt)+"/"
 
 while True:
-    json_return=grab_data(check_ip,user_name,passwd)
-    print(url)
-    print(get_json_data(server_ip, url, json_return, method, user_name, passwd, value))
-    # Sleep 15 minutes before grabbing the next data link
-    time.sleep(900)
+    json_data=grab_data(check_ip,user_name,passwd)
+    print(json_data)
+    #print(url)
+    print(get_json_data(server_ip, url, json_data, "post", user_name, passwd, value))
+    # Sleep 5 minutes before grabbing the next data link
+    time.sleep(10)

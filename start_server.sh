@@ -8,6 +8,7 @@ git clone https://github.com/wessenstam/web_gts
 ln -s /json /github/web_gts/json
 cd /github/web_gts
 # Start the application
-export FLASK_APP=app.py
+export FLASK_APP=server.py
 export FLASK_DEBUG=True
+export FLASK_RUN_PORT=5000
 flask run --host=0.0.0.0
