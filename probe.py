@@ -1,6 +1,7 @@
 # This script is to probed the to be checked cluster
 # 19-03-2020: Willem Essenstam - Initial version 0.1
 # 26-03-2020: Willem Essenstam - added extra parameters that are wanted
+# 23-01-2021: Willem Essenstam - Change to Just CPU, RAM, # VMs, Storage Latency 
 
 #TODO: Get Era data in the central app so we can also see Era usage afterwards
 
@@ -11,6 +12,7 @@ import urllib3
 import time
 import os
 import datetime
+from extract_values import extract_values
 
 #####################################################################################################################################################################
 # This function is to get the to see if the initialisation of the cluster has been run (EULA, PULSE, Network)
@@ -38,7 +40,7 @@ def get_json_data(ip_address,get_url,json_data,method,user,passwd,value):
                 json_data = json.loads(page.text)
             return json_data
         except requests.exceptions.RequestException as err:
-            print("OOps Error: Something Else", err)
+            print("OopsError: Something Else", err)
             return err
         except requests.exceptions.HTTPError as errh:
             print("Http Error:", errh)
@@ -97,6 +99,29 @@ def grab_data(server_ip,user,passwd):
     json_search = get_json_data(server_ip, url, payload, method, user, passwd, value)
     ram = json_search['group_results'][0]['entity_results'][0]['data'][0]['values'][0]['values'][0]
 
+    # ********************************************************************************************************
+
+    # How many VMs did we have on the PC and what are their names?
+    url = "api/nutanix/v3/vms/list"
+    payload = '{}'
+    json_search = get_json_data(server_ip, url, payload, method, user, passwd, value)
+    vm_nr = json_search['metadata']['total_matches']
+    vm_name_json = json.dumps(vm_nr)
+
+""" # ********************************************************************************************************
+    # NOT NEEDED FOR GTS 2021
+    # ********************************************************************************************************
+    
+    # Grabbing the names of the VMs
+    # Get the variables defined
+    count = 0
+    vm_name_list = []
+    while count < len(json_search['entities']):
+        vm_name = json_search['entities'][count]['status']['name']
+        vm_name_list.append(vm_name)
+        count += 1
+    vm_name_json = json.dumps(vm_name_list)
+
     # *********************************************************************************************************
     # What is the amount of IOPS load on the PC?
     url = "api/nutanix/v3/groups"
@@ -114,24 +139,6 @@ def grab_data(server_ip,user,passwd):
     json_search = get_json_data(server_ip, url, payload, method, user, passwd, value)
     # print(json_search)
     audits_nr = json_search['filtered_entity_count']
-
-    # *********************************** Overall and detailed information **************************************
-
-    # How many VMs did we have on the PC and what are their names?
-    url = "api/nutanix/v3/vms/list"
-    payload = '{}'
-    json_search = get_json_data(server_ip, url, payload, method, user, passwd, value)
-    vm_nr = json_search['metadata']['total_matches']
-
-    # Grabbing the names of the VMs
-    # Get the variables defined
-    count=0
-    vm_name_list=[]
-    while count < len(json_search['entities']):
-        vm_name=json_search['entities'][count]['status']['name']
-        vm_name_list.append(vm_name)
-        count+=1
-    vm_name_json=json.dumps(vm_name_list)
 
     # *********************************************************************************************************
     # What is the amount of Networks on the PC and what are their names?
@@ -315,6 +322,7 @@ def grab_data(server_ip,user,passwd):
                  ',"cat":' + str(cat_json) + \
                  ',"dbs":' + str(db_json) + \
                  '}'
+"""
     #print(json_payload)
     return json_payload
 
