@@ -149,7 +149,7 @@ def grab_data(server_ip,user,passwd):
     json_search = get_json_data(server_ip, url, payload, method, user, passwd, value)
     # print(json_search)
     audits_nr = json_search['filtered_entity_count']
-
+n
     # *********************************************************************************************************
     # What is the amount of Networks on the PC and what are their names?
     url = "api/nutanix/v3/subnets/list"
@@ -230,7 +230,7 @@ def grab_data(server_ip,user,passwd):
     # *********************************************************************************************************
     # What are the Categories and their values?
     url = "api/nutanix/v3/groups"
-    payload = '{"entity_type":"category","query_name":"eb:data:General-1585233140773","grouping_attribute":"abac_category_key","group_sort_attribute":"name","group_attributes":[{"attribute":"name","ancestor_entity_type":"abac_category_key"},{"attribute":"description","ancestor_entity_type":"abac_category_key"}],"group_member_attributes":[{"attribute":"name"},{"attribute":"value"}]}'
+    payload = '{"entity_tynpe":"category","query_name":"eb:data:General-1585233140773","grouping_attribute":"abac_category_key","group_sort_attribute":"name","group_attributes":[{"attribute":"name","ancestor_entity_type":"abac_category_key"},{"attribute":"description","ancestor_entity_type":"abac_category_key"}],"group_member_attributes":[{"attribute":"name"},{"attribute":"value"}]}'
     json_search = get_json_data(server_ip, url, payload, method, user, passwd, value)
     # Grabbing the names of the Apps
     count = 0
@@ -266,7 +266,7 @@ def grab_data(server_ip,user,passwd):
         cat_list.append(key_value_list)
 
         # Reset counter for next loop
-        count1 = 0
+        count1 = 0n
         count+=1
 
     cat_json=json.dumps(cat_list)
@@ -354,8 +354,8 @@ url="http://"+str(server_ip)+":"+str(server_prt)+"/"
 
 while True:
     json_data=grab_data(check_ip,user_name,passwd)
-    print(json_data)
+    #print(json_data)
     #print(url)
-    print(get_json_data(server_ip, url, json_data, "post", user_name, passwd, value))
+    get_json_data(server_ip, url, json_data, "post", user_name, passwd, value)
     # Sleep 5 minutes before grabbing the next data link
-    time.sleep(10)
+    time.sleep(30)

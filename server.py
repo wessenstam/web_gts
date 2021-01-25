@@ -4,17 +4,24 @@
 import json
 from flask import *
 from datetime import datetime
-
-#from urllib3 import request
+from influxdb_client import InfluxDBClient, Point, WritePrecision
+from influxdb_client.client.write_api import SYNCHRONOUS
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
+
+# Get the InfluxDB Client session up and running
+# You can generate a Token from the "Tokens Tab" in the UI
+token = "6QQuPifVZXdrKjv5a9jYJNUEwqCLNCOt3IFwSO_x5zzBj5bNTUaOXbjZe4-5sgqv5zgO0rCKoTAvp6qni0m-EA=="
+org = "TE"
+bucket = "gts2021"
+client = InfluxDBClient(url="http://192.168.1.196:8086", token=token)
+write_api = client.write_api(write_options=SYNCHRONOUS)
 
 # Get the json data from the probes into a dataframe.
 @app.route("/", methods=['POST'])
 def input_json():
     json_data=request.get_json()
-    print(json_data)
     cluster_name=json_data['cluster_name']
     vm_nr=json_data['vms']
     cpu=json_data['cpu']
@@ -32,12 +39,17 @@ def input_json():
                       'Clus_ip': clus_ip,
                       'Timestamp': timestamp
                       }
-    #write data received to the InfluxDB TO BE BUILD!!!!
 
-    print(json.dumps(return_payload))
-    # get the data into a new df and append afterwards to a csv file
+    write_api.write(bucket, org, [
+        {"measurement": "cpu", "tags": {"clustername": cluster_name,"cluster_ip": clus_ip}, "fields": {"cpu_load": float(cpu)}}])
+    write_api.write(bucket, org, [
+        {"measurement": "ram", "tags": {"clustername": cluster_name, "cluster_ip": clus_ip}, "fields": {"ram_load": float(ram)}}])
+    write_api.write(bucket, org, [
+        {"measurement": "io_lat", "tags": {"clustername": cluster_name, "cluster_ip": clus_ip}, "fields": {"latency": float(io_lat)}}])
+    write_api.write(bucket, org, [
+        {"measurement": "vm_nr", "tags": {"clustername": cluster_name, "cluster_ip": clus_ip}, "fields": {"vms": int(vm_nr)}}])
+
     return json.dumps(return_payload)
-
 # *************************************************************************************************
 if __name__ == "main":
     # start the app
