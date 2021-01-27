@@ -14,9 +14,10 @@ app.config['SECRET_KEY'] = 'you-will-never-guess'
 # Get the InfluxDB Client session up and running
 # You can generate a Token from the "Tokens Tab" in the UI
 token = os.environ['token']
+db_server=os.environ['db_server']
 org = "TE"
 bucket = "gts2021"
-client = InfluxDBClient(url="http://127.0.0.1:8086", token=token)
+client = InfluxDBClient(url="http://"+db_server+":8086", token=token)
 write_api = client.write_api(write_options=SYNCHRONOUS)
 
 print(token+" "+org+" "+ bucket)
