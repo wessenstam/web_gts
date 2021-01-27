@@ -343,11 +343,11 @@ def grab_data(server_ip,user,passwd):
 urllib3.disable_warnings()
 
 # Grab the environmental data we have received when we started the container
-server_ip="127.0.0.1"#os.environ['server_ip']
-server_prt=5000#os.environ['server_prt']
-check_ip="192.168.1.51"#os.environ['check_ip']
-user_name="admin"#os.environ['user_name']
-passwd="CE@Nutanix12"#os.environ['passwd']
+server_ip=os.environ['server_ip']
+server_prt=os.environ['server_prt']
+check_ip=os.environ['check_ip']
+user_name=os.environ['user_name']
+passwd=os.environ['passwd']
 value=''
 method='POST'
 url="http://"+str(server_ip)+":"+str(server_prt)+"/"
@@ -356,6 +356,6 @@ while True:
     json_data=grab_data(check_ip,user_name,passwd)
     #print(json_data)
     #print(url)
-    get_json_data(server_ip, url, json_data, "post", user_name, passwd, value)
+    print(get_json_data(server_ip, url, json_data, "post", user_name, passwd, value))
     # Sleep 5 minutes before grabbing the next data link
     time.sleep(30)

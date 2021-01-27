@@ -6,16 +6,17 @@ from flask import *
 from datetime import datetime
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'you-will-never-guess'
 
 # Get the InfluxDB Client session up and running
 # You can generate a Token from the "Tokens Tab" in the UI
-token = "6QQuPifVZXdrKjv5a9jYJNUEwqCLNCOt3IFwSO_x5zzBj5bNTUaOXbjZe4-5sgqv5zgO0rCKoTAvp6qni0m-EA=="
+token = os.environ['token']
 org = "TE"
 bucket = "gts2021"
-client = InfluxDBClient(url="http://192.168.1.196:8086", token=token)
+client = InfluxDBClient(url="http://127.0.0.1:8086", token=token)
 write_api = client.write_api(write_options=SYNCHRONOUS)
 
 # Get the json data from the probes into a dataframe.
@@ -39,7 +40,7 @@ def input_json():
                       'Clus_ip': clus_ip,
                       'Timestamp': timestamp
                       }
-
+    #print(return_payload)
     write_api.write(bucket, org, [
         {"measurement": "cpu", "tags": {"clustername": cluster_name,"cluster_ip": clus_ip}, "fields": {"cpu_load": float(cpu)}}])
     write_api.write(bucket, org, [

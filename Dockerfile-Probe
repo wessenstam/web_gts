@@ -3,7 +3,7 @@ FROM alpine
 MAINTAINER Willem Essenstam <wessenstam.at@gmail.com>
 
 # Get the to be needed stuff in
-RUN apk add --no-cache python3 git openssl openssh && \
+RUN apk add --no-cache python3 git openssl openssh py3-pip&& \
     ln -s /usr/include/locale.h /usr/include/xlocale.h  && \
 # Install the python dependencies
     pip3 install --upgrade pip && \
