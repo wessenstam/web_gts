@@ -116,7 +116,7 @@ def grab_data(server_ip,user,passwd):
     # ********************************************************************************************************
 
     # Return the combined JSON so it can be send
-    #print(json_payload)
+    print(json_payload)
     return json_payload
 """ # ********************************************************************************************************
     # NOT NEEDED FOR GTS 2021
@@ -358,7 +358,7 @@ while True:
     json_data=grab_data(check_ip,user_name,passwd)
     #print(json_data)
     #print(url)
-    return=get_json_data(server_ip, url, json_data, "post", user_name, passwd, value)
+    get_json_data(server_ip, url, json_data, "post", user_name, passwd, value)
     # Sleep 5 minutes before grabbing the next data link
     print(return)
     time.sleep(30)
