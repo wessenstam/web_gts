@@ -358,6 +358,7 @@ while True:
     json_data=grab_data(check_ip,user_name,passwd)
     #print(json_data)
     #print(url)
-    print(get_json_data(server_ip, url, json_data, "post", user_name, passwd, value))
+    return=get_json_data(server_ip, url, json_data, "post", user_name, passwd, value)
     # Sleep 5 minutes before grabbing the next data link
+    print(return)
     time.sleep(30)
