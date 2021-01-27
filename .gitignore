@@ -87,3 +87,7 @@ docker_data/influxdb/engine/data/b4958eac42d3db94/autogen/1/index/6/MANIFEST
 docker_data/influxdb/engine/data/b4958eac42d3db94/autogen/1/index/7/L0-00000001.tsl
 docker_data/influxdb/engine/data/b4958eac42d3db94/autogen/1/index/7/MANIFEST
 docker_data/influxdb/engine/wal/b4958eac42d3db94/autogen/1/_00001.wal
+.idea/aws.xml
+.idea/misc.xml
+.idea/web_gts.iml
+__pycache__/app.cpython-37.pyc

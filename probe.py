@@ -352,6 +352,8 @@ value=''
 method='POST'
 url="http://"+str(server_ip)+":"+str(server_prt)+"/"
 
+print(user_name+" "+passwd)
+
 while True:
     json_data=grab_data(check_ip,user_name,passwd)
     #print(json_data)
