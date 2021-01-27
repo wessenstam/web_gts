@@ -19,7 +19,7 @@ bucket = "gts2021"
 client = InfluxDBClient(url="http://127.0.0.1:8086", token=token)
 write_api = client.write_api(write_options=SYNCHRONOUS)
 
-print(token)
+print(token+" "+org+" "+ bucket)
 
 # Get the json data from the probes into a dataframe.
 @app.route("/", methods=['POST'])
