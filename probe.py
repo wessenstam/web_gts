@@ -349,7 +349,7 @@ check_ip=os.environ['check_ip']
 user_name=os.environ['user_name']
 passwd=os.environ['passwd']
 value=''
-method='POST'
+method='post'
 url="http://"+str(server_ip)+":"+str(server_prt)+"/"
 
 print(user_name+" "+passwd)
