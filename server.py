@@ -40,7 +40,7 @@ def input_json():
                       'Clus_ip': clus_ip,
                       'Timestamp': timestamp
                       }
-    #print(return_payload)
+    print(return_payload)
     write_api.write(bucket, org, [
         {"measurement": "cpu", "tags": {"clustername": cluster_name,"cluster_ip": clus_ip}, "fields": {"cpu_load": float(cpu)}}])
     write_api.write(bucket, org, [

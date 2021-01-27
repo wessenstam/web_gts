@@ -360,5 +360,4 @@ while True:
     #print(url)
     get_json_data(server_ip, url, json_data, "post", user_name, passwd, value)
     # Sleep 5 minutes before grabbing the next data link
-    print(return)
     time.sleep(30)
