@@ -20,8 +20,6 @@ bucket = "gts2021"
 client = InfluxDBClient(url="http://"+db_server+":8086", token=token)
 write_api = client.write_api(write_options=SYNCHRONOUS)
 
-print(token+" "+org+" "+ bucket)
-
 # Get the json data from the probes into a dataframe.
 @app.route("/", methods=['POST'])
 def input_json():
@@ -43,7 +41,6 @@ def input_json():
                       'Clus_ip': clus_ip,
                       'Timestamp': timestamp
                       }
-    print(return_payload)
     write_api.write(bucket, org, [
         {"measurement": "cpu", "tags": {"clustername": cluster_name,"cluster_ip": clus_ip}, "fields": {"cpu_load": float(cpu)}}])
     write_api.write(bucket, org, [
